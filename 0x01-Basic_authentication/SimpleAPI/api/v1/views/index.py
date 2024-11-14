@@ -3,7 +3,7 @@
 """
 from flask import jsonify, abort
 from api.v1.views import app_views
-
+from models.user import User  
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status() -> str:
@@ -13,21 +13,27 @@ def status() -> str:
     """
     return jsonify({"status": "OK"})
 
-
 @app_views.route('/stats/', strict_slashes=False)
 def stats() -> str:
     """ GET /api/v1/stats
     Return:
-      - the number of each objects
+      - the number of each object
     """
-    from models.user import User
-    stats = {}
-    stats['users'] = User.count()
+    stats = {
+        'users': User.count()
+    }
     return jsonify(stats)
 
 @app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
 def authorized_data():
-  authorized = False
-  if not authorized:
-    abort(401)
-  return jsonify(message="This is secure data.")
+    authorized = False
+    if not authorized:
+        abort(401, description="Unauthorized access")
+    return jsonify(message="This is secure data.")
+
+@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
+def forbidden():
+    forbidden = False
+    if not forbidden:
+        abort(403, description="Forbidden access")
+    return jsonify(message="This is secure data.")
