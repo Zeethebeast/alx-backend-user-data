@@ -1,39 +1,53 @@
 #!/usr/bin/env python3
-""" Module of Index views
 """
-from flask import jsonify, abort
+Route module for the API.
+
+This module initializes and configures the Flask application, registers blueprints,
+and sets up CORS support and error handlers for custom HTTP responses.
+
+Environment variables:
+    API_HOST (str): Host address to listen on (default: 0.0.0.0).
+    API_PORT (int): Port to listen on (default: 5000).
+"""
+
+from os import getenv
 from api.v1.views import app_views
-from models.user import User  
+from flask import Flask, jsonify, abort, request
+from flask_cors import CORS
 
-@app_views.route('/status', methods=['GET'], strict_slashes=False)
-def status() -> str:
-    """ GET /api/v1/status
-    Return:
-      - the status of the API
+# Initialize Flask application
+app = Flask(__name__)
+
+# Register the blueprint containing API routes
+app.register_blueprint(app_views)
+
+# Set up CORS (Cross-Origin Resource Sharing) to allow access from any origin
+CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+
+@app.errorhandler(404)
+def not_found(error) -> str:
     """
-    return jsonify({"status": "OK"})
+    Handle 404 Not Found errors.
 
-@app_views.route('/stats/', strict_slashes=False)
-def stats() -> str:
-    """ GET /api/v1/stats
-    Return:
-      - the number of each object
+    Returns:
+        JSON response with a 404 error message.
     """
-    stats = {
-        'users': User.count()
-    }
-    return jsonify(stats)
+    return jsonify({"error": "Not found"}), 404
 
-@app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
-def authorized_data():
-    authorized = False
-    if not authorized:
-        abort(401, description="Unauthorized access")
-    return jsonify(message="This is secure data.")
+@app.errorhandler(401)
+def unauthorized(error) -> str:
+    """
+    Handle 401 Unauthorized errors.
 
-@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
-def forbidden():
-    forbidden = False
-    if not forbidden:
-        abort(403, description="Forbidden access")
-    return jsonify(message="This is secure data.")
+    Returns:
+        JSON response with a 401 error message.
+    """
+    return jsonify({"error": "Unauthorized"}), 401
+
+if __name__ == "__main__":
+    # Retrieve host and port from environment variables, with defaults if not set
+    host = getenv("API_HOST", "0.0.0.0")
+    port = getenv("API_PORT", "5000")
+    
+    # Run the application
+    app.run(host=host, port=port)
