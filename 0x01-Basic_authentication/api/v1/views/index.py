@@ -1,53 +1,93 @@
 #!/usr/bin/env python3
 """
-Route module for the API.
+Module of Index views for the API.
 
-This module initializes and configures the Flask application, registers blueprints,
-and sets up CORS support and error handlers for custom HTTP responses.
+This module provides endpoints to check the status of the API, retrieve
+statistics on objects, and simulate error responses for unauthorized
+and forbidden access.
 
-Environment variables:
-    API_HOST (str): Host address to listen on (default: 0.0.0.0).
-    API_PORT (int): Port to listen on (default: 5000).
+Routes:
+    /status (GET): Returns a JSON response with the API status.
+    /stats (GET): Returns a JSON response with statistics on various objects.
+    /unauthorized (GET): Simulates an endpoint requiring authorization and 
+        returns a 401 Unauthorized error if access is denied.
+    /forbidden (GET): Simulates a restricted endpoint and returns a 
+        403 Forbidden error if access is restricted.
 """
 
-from os import getenv
+from flask import jsonify, abort
 from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
-from flask_cors import CORS
+from models.user import User  
 
-# Initialize Flask application
-app = Flask(__name__)
-
-# Register the blueprint containing API routes
-app.register_blueprint(app_views)
-
-# Set up CORS (Cross-Origin Resource Sharing) to allow access from any origin
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-
-@app.errorhandler(404)
-def not_found(error) -> str:
+@app_views.route('/status', methods=['GET'], strict_slashes=False)
+def status() -> str:
     """
-    Handle 404 Not Found errors.
+    GET /api/v1/status
+    Check the status of the API.
 
     Returns:
-        JSON response with a 404 error message.
+        JSON: A JSON response indicating the API status.
+    Example:
+        {
+            "status": "OK"
+        }
     """
-    return jsonify({"error": "Not found"}), 404
+    return jsonify({"status": "OK"})
 
-@app.errorhandler(401)
-def unauthorized(error) -> str:
+@app_views.route('/stats/', strict_slashes=False)
+def stats() -> str:
     """
-    Handle 401 Unauthorized errors.
+    GET /api/v1/stats
+    Retrieve statistics about the objects managed by the API.
 
     Returns:
-        JSON response with a 401 error message.
+        JSON: A JSON object containing the count of each type of object.
+    Example:
+        {
+            "users": 45
+        }
     """
-    return jsonify({"error": "Unauthorized"}), 401
+    stats = {
+        'users': User.count()
+    }
+    return jsonify(stats)
 
-if __name__ == "__main__":
-    # Retrieve host and port from environment variables, with defaults if not set
-    host = getenv("API_HOST", "0.0.0.0")
-    port = getenv("API_PORT", "5000")
-    
-    # Run the application
-    app.run(host=host, port=port)
+@app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
+def authorized_data():
+    """
+    GET /api/v1/unauthorized
+    Simulate an endpoint that requires user authorization.
+
+    If the user is not authorized, returns a 401 Unauthorized error.
+
+    Returns:
+        JSON: A JSON response with an error message for unauthorized access.
+    Example:
+        {
+            "error": "Unauthorized access"
+        }
+    """
+    authorized = False
+    if not authorized:
+        abort(401, description="Unauthorized access")
+    return jsonify(message="This is secure data.")
+
+@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
+def forbidden():
+    """
+    GET /api/v1/forbidden
+    Simulate an endpoint that is restricted to certain users.
+
+    If access is forbidden, returns a 403 Forbidden error.
+
+    Returns:
+        JSON: A JSON response with an error message for forbidden access.
+    Example:
+        {
+            "error": "Forbidden access"
+        }
+    """
+    forbidden = False
+    if not forbidden:
+        abort(403, description="Forbidden access")
+    return jsonify(message="This is secure data.")
