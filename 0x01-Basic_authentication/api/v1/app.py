@@ -2,8 +2,10 @@
 """
 Route module for the API.
 
-This module initializes and configures the Flask application, registers blueprints,
-and sets up CORS support and error handlers for custom HTTP responses.
+This module initializes and configures the
+Flask application, registers blueprints,
+and sets up CORS support and error handlers
+for custom HTTP responses.
 
 Environment variables:
     API_HOST (str): Host address to listen on (default: 0.0.0.0).
@@ -24,6 +26,7 @@ app.register_blueprint(app_views)
 # Set up CORS (Cross-Origin Resource Sharing) to allow access from any origin
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
+
 @app.errorhandler(404)
 def not_found(error) -> str:
     """
@@ -33,6 +36,7 @@ def not_found(error) -> str:
         JSON response with a 404 error message.
     """
     return jsonify({"error": "Not found"}), 404
+
 
 @app.errorhandler(401)
 def unauthorized(error) -> str:
@@ -44,10 +48,10 @@ def unauthorized(error) -> str:
     """
     return jsonify({"error": "Unauthorized"}), 401
 
+
 if __name__ == "__main__":
-    # Retrieve host and port from environment variables, with defaults if not set
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
-    
+
     # Run the application
     app.run(host=host, port=port)
