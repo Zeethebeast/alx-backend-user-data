@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""
 Module for API authentication management.
 
 This module contains the Auth class, which provides methods for managing
