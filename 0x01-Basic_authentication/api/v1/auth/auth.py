@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 
 """
-Module for API authentication management.
-
-This module contains the Auth class, which provides methods for managing
-authentication in a Flask API, also including checking required authentication
-and retrieving the current user.
+This is a module that checks for
+path for authentication
 """
 
 from flask import request, Request
 from typing import List, TypeVar, Optional
+
 
 class Auth:
     """
@@ -22,11 +20,14 @@ class Auth:
 
         Args:
             path (str): The path to check.
-            excluded_paths (List[str]): A list of paths that do not require authentication.
+            excluded_paths (List[str]): A list of
+            paths that do not require authentication.
 
         Returns:
             bool: True if authentication is required, False otherwise.
-                  Returns True if path is None, or excluded_paths is None or empty.
+                  Returns True if path is
+                  None, or excluded_paths is
+                  None or empty.
                   Returns False if path is in excluded_paths (slash-tolerant).
         """
         if path is None:
@@ -41,10 +42,10 @@ class Auth:
                 return False
         return True
 
-    def authorization_header(self, flask_request: Optional[Request] = None) -> str:
+    def authorization_header(self, request=None) -> str:
         """
-        Retrieves the authorization header from the Flask request object.
-
+        Retrieves the authorization
+        header from the Flask request object.
         Args:
             flask_request: The Flask request object (default: None).
 
@@ -53,7 +54,7 @@ class Auth:
         """
         return None
 
-    def current_user(self, flask_request: Optional[Request] = None) -> Optional[TypeVar('User')]:
+    def current_user(self, request=None) -> TypeVar('User'):
         """
         Retrieves the current user from the Flask request object.
 
