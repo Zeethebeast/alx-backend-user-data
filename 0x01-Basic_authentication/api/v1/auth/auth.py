@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
+
 """
-Definition of class Auth
+Module to check if a path requires authentication.
 """
+
 from flask import request
-from typing import (
-    List,
-    TypeVar
-)
+from typing import List, TypeVar
 
 
 class Auth:
