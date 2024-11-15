@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+
 """
 Module for API authentication management.
 
 This module contains the Auth class, which provides methods for managing
-authentication in a Flask API, including checking required authentication
+authentication in a Flask API, also including checking required authentication
 and retrieving the current user.
 """
 
