@@ -7,9 +7,8 @@ authentication in a Flask API, including checking required authentication
 and retrieving the current user.
 """
 
-from flask import request
-from typing import List, TypeVar
-
+from flask import request, Request
+from typing import List, TypeVar, Optional
 
 class Auth:
     """
@@ -25,11 +24,23 @@ class Auth:
             excluded_paths (List[str]): A list of paths that do not require authentication.
 
         Returns:
-            bool: False for now; logic to be implemented later.
+            bool: True if authentication is required, False otherwise.
+                  Returns True if path is None, or excluded_paths is None or empty.
+                  Returns False if path is in excluded_paths (slash-tolerant).
         """
-        return False
+        if path is None:
+            return True
+        if excluded_paths is None or not excluded_paths:
+            return True
 
-    def authorization_header(self, flask_request=None) -> str:
+        new_path = path.rstrip('/')
+
+        for excluded_path in excluded_paths:
+            if excluded_path.rstrip('/') == new_path:
+                return False
+        return True
+
+    def authorization_header(self, flask_request: Optional[Request] = None) -> str:
         """
         Retrieves the authorization header from the Flask request object.
 
@@ -41,7 +52,7 @@ class Auth:
         """
         return None
 
-    def current_user(self, flask_request=None) -> TypeVar('User'):
+    def current_user(self, flask_request: Optional[Request] = None) -> Optional[TypeVar('User')]:
         """
         Retrieves the current user from the Flask request object.
 
