@@ -9,15 +9,16 @@ and forbidden access.
 Routes:
     /status (GET): Returns a JSON response with the API status.
     /stats (GET): Returns a JSON response with statistics on various objects.
-    /unauthorized (GET): Simulates an endpoint requiring authorization and 
+    /unauthorized (GET): Simulates an endpoint requiring authorization and
         returns a 401 Unauthorized error if access is denied.
-    /forbidden (GET): Simulates a restricted endpoint and returns a 
+    /forbidden (GET): Simulates a restricted endpoint and returns a
         403 Forbidden error if access is restricted.
 """
 
 from flask import jsonify, abort
 from api.v1.views import app_views
-from models.user import User  
+from models.user import User
+
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status() -> str:
@@ -33,6 +34,7 @@ def status() -> str:
         }
     """
     return jsonify({"status": "OK"})
+
 
 @app_views.route('/stats/', strict_slashes=False)
 def stats() -> str:
@@ -51,6 +53,7 @@ def stats() -> str:
         'users': User.count()
     }
     return jsonify(stats)
+
 
 @app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
 def authorized_data():
@@ -71,6 +74,7 @@ def authorized_data():
     if not authorized:
         abort(401, description="Unauthorized access")
     return jsonify(message="This is secure data.")
+
 
 @app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
 def forbidden():
