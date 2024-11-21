@@ -31,11 +31,11 @@ class DB:
     
 
 
-    def add_user(self, email: str, hashed_password: str):
+    def add_user(self, email: str, hashed_password: str) -> User:
         """Adds a new user to the Databse
         """
         from user import User
-        new_user = User(email=email, hashed_password=hashed_password)
-        self._session.add(new_user)
+        db_user = User(email=email, hashed_password=hashed_password)
+        self._session.add(db_user)
         self._session.commit()
-        return new_user
+        return db_user
