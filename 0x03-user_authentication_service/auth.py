@@ -4,7 +4,7 @@
 import bcrypt
 
 
-def hash_password(password: str) -> bytes:
+def _hash_password(password: str) -> bytes:
     """Hashes the given password using bcrypt.
 
     Args:
